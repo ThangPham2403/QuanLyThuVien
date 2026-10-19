@@ -26,4 +26,17 @@ public class CTMuonTra {
 
     public int getSoLuong() { return soLuong; }
     public void setSoLuong(int soLuong) { this.soLuong = soLuong; }
+    
+    
+    
+    //-------------
+    // --- 2 cái public này chính là 2 cái cần thêm ở đoạn code của Nhung phần CTMuonTraDAO----
+    //------------------------------
+    public void setTenSach(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void setTacGia(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
