@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JTable;
 
 public class SachDangMuonController {
 
@@ -42,5 +43,9 @@ public class SachDangMuonController {
         }
 
         return danhSach;
+    }
+
+    public void laySachDangMuon(JTable tblDangMuon) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

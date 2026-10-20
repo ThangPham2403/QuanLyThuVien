@@ -1,180 +1,153 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.thuvien.view;
 
 import com.thuvien.controller.SachQuaHanController;
-
 import com.thuvien.model.SachQuaHanModel;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-/**
- *
- * @author Admin
- */
-public class QuaHan extends javax.swing.JFrame {
-private DefaultTableModel model;
-   private final SachQuaHanController sachQuaHanController = new SachQuaHanController();
+
+public class QuaHan extends JPanel {
+
+    private final SachQuaHanController sachQuaHanController;
+    private DefaultTableModel tableModel;
+    private JTable tblSachQuaHan;
+
+    private final Color mauNen = new Color(245, 247, 250);
+    private final Color mauDo = new Color(183, 28, 28);
+    private final Color mauChu = new Color(44, 62, 80);
+
     public QuaHan() {
-        initComponents();
-         model = new DefaultTableModel(
-        new String[]{"Mã Mượn Trả", "SDT",
-                     "Hạn Trả", "Trạng Thái"}, 0);
+        sachQuaHanController = new SachQuaHanController();
 
-    tblSachQuaHan.setModel(model);
-    loadDanhSachSachQuaHan();
-}
+        initComponentsCustom();
+        loadDanhSachSachQuaHan();
+    }
 
+    private void initComponentsCustom() {
+        setLayout(new BorderLayout(15, 20));
+        setBackground(mauNen);
+        setBorder(new EmptyBorder(24, 24, 24, 24));
 
+        // Phần tiêu đề và nút
+        JPanel pnlTop = new JPanel(new BorderLayout(10, 10));
+        pnlTop.setOpaque(false);
 
-private void loadDanhSachSachQuaHan() {
+        JLabel lblTitle =
+            new JLabel("Danh sách sách quá hạn chưa trả");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitle.setForeground(mauDo);
 
-    DefaultTableModel model =
-        (DefaultTableModel) tblSachQuaHan.getModel();
+        JButton btnLamMoi = new JButton("Làm mới");
+        btnLamMoi.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnLamMoi.setBackground(mauDo);
+        btnLamMoi.setForeground(Color.WHITE);
+        btnLamMoi.setFocusPainted(false);
+        btnLamMoi.setOpaque(true);
+        btnLamMoi.setBorderPainted(false);
+        btnLamMoi.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLamMoi.setPreferredSize(new Dimension(120, 38));
+        btnLamMoi.addActionListener(e -> loadDanhSachSachQuaHan());
 
-    // Xóa dữ liệu cũ
-    model.setRowCount(0);
+        pnlTop.add(lblTitle, BorderLayout.CENTER);
+        pnlTop.add(btnLamMoi, BorderLayout.EAST);
 
-    try {
-        List<SachQuaHanModel> danhSach =
-            sachQuaHanController.layDanhSachSachQuaHan();
+        add(pnlTop, BorderLayout.NORTH);
 
-        for (SachQuaHanModel sach : danhSach) {
-            model.addRow(new Object[]{
-                sach.getMaMuonTra(),
-                sach.getSoDienThoai(),
-                sach.getHanTra(),
-                sach.getTrangThai()
-            });
+        // Bảng dữ liệu
+        String[] headers = {
+            "Mã Mượn Trả",
+            "Số điện thoại",
+            "Hạn trả",
+            "Trạng thái"
+        };
+
+        tableModel = new DefaultTableModel(headers, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tblSachQuaHan = new JTable(tableModel);
+        tblSachQuaHan.setRowHeight(34);
+        tblSachQuaHan.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tblSachQuaHan.setForeground(mauChu);
+        tblSachQuaHan.setSelectionBackground(new Color(255, 224, 224));
+        tblSachQuaHan.setSelectionForeground(mauChu);
+        tblSachQuaHan.setShowGrid(true);
+        tblSachQuaHan.setGridColor(new Color(225, 229, 235));
+        tblSachQuaHan.setFillsViewportHeight(true);
+
+        tblSachQuaHan.getTableHeader().setFont(
+            new Font("Segoe UI", Font.BOLD, 14)
+        );
+        tblSachQuaHan.getTableHeader().setBackground(mauDo);
+        tblSachQuaHan.getTableHeader().setForeground(Color.WHITE);
+        tblSachQuaHan.getTableHeader().setOpaque(true);
+        tblSachQuaHan.getTableHeader().setPreferredSize(
+            new Dimension(0, 40)
+        );
+
+        DefaultTableCellRenderer centerRenderer =
+            new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        for (int i = 0; i < tblSachQuaHan.getColumnCount(); i++) {
+            tblSachQuaHan.getColumnModel()
+                .getColumn(i)
+                .setCellRenderer(centerRenderer);
         }
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Lỗi tải danh sách sách quá hạn: " + e.getMessage(),
-            "Lỗi",
-            JOptionPane.ERROR_MESSAGE
+        JScrollPane scrollPane = new JScrollPane(tblSachQuaHan);
+        scrollPane.setBorder(
+            BorderFactory.createLineBorder(new Color(220, 224, 230))
         );
+
+        add(scrollPane, BorderLayout.CENTER);
     }
-}
 
+    private void loadDanhSachSachQuaHan() {
+        tableModel.setRowCount(0);
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblSachQuaHan = new javax.swing.JTable();
-        btnXuatQuaHan = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Danh sách sách quá hạn chưa trả");
-
-        tblSachQuaHan.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Mã Mượn Trả", "SĐT", "Hạn Trả", "Trạng Thái"
-            }
-        ));
-        jScrollPane1.setViewportView(tblSachQuaHan);
-
-        btnXuatQuaHan.setBackground(new java.awt.Color(65, 65, 211));
-        btnXuatQuaHan.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnXuatQuaHan.setForeground(new java.awt.Color(255, 255, 255));
-        btnXuatQuaHan.setText("Xuất Báo Cáo");
-        btnXuatQuaHan.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnXuatQuaHanActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnXuatQuaHan, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnXuatQuaHan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void btnXuatQuaHanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatQuaHanActionPerformed
-        javax.swing.JOptionPane.showMessageDialog(this, "Xuất file thành công!");
-    }//GEN-LAST:event_btnXuatQuaHanActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+            List<SachQuaHanModel> danhSach =
+                sachQuaHanController.layDanhSachSachQuaHan();
+
+            for (SachQuaHanModel sach : danhSach) {
+                tableModel.addRow(new Object[]{
+                    sach.getMaMuonTra(),
+                    sach.getSoDienThoai(),
+                    sach.getHanTra(),
+                    sach.getTrangThai()
+                });
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(QuaHan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(QuaHan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(QuaHan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(QuaHan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Lỗi tải danh sách sách quá hạn:\n" + e.getMessage(),
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE
+            );
+
+            e.printStackTrace();
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new QuaHan().setVisible(true);
-            }
-        });
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnXuatQuaHan;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblSachQuaHan;
-    // End of variables declaration//GEN-END:variables
 }

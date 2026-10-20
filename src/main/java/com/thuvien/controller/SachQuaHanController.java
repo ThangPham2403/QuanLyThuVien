@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JTable;
 
 public class SachQuaHanController {
 
@@ -42,5 +43,9 @@ public class SachQuaHanController {
         }
 
         return danhSach;
+    }
+
+    public void hienThiSachQuaHan(JTable tblQuaHan) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

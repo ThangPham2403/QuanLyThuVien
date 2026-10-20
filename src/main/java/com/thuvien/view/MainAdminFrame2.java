@@ -304,6 +304,10 @@ public class MainAdminFrame2 extends JFrame {
 
                 // Khi tích hợp LoginView, mở lại màn hình đăng nhập
                 // tại đây.
+                // Mở lại giao diện đăng nhập
+                LoginForm loginForm = new LoginForm();
+                loginForm.setLocationRelativeTo(null);
+                loginForm.setVisible(true);
 
             }
 
@@ -384,7 +388,6 @@ public class MainAdminFrame2 extends JFrame {
                     "  Tổng quan thống kê",
                     "  Sách đang được mượn",
                     "  Sách quá hạn",
-                    "  Xuất báo cáo"
                 }
         );
 
@@ -393,7 +396,6 @@ public class MainAdminFrame2 extends JFrame {
         addMenuGroup(
                 "⚙️  Quản lý hệ thống",
                 new String[]{
-                    "  Thêm tài khoản",
                     "  Quản lý tài khoản"
                 }
         );
@@ -530,7 +532,22 @@ public class MainAdminFrame2 extends JFrame {
                     showContent(new QuanLyTraSachPanel());
                     break;
                     
-                
+                case "Tổng quan thống kê":
+                    showContent(new TongQuanThongKe());
+                    break;
+                    
+                case "Sách đang được mượn":
+                    showContent(new DangMuon());
+                    break;
+                 
+                case "Sách quá hạn":
+                    showContent(new QuaHan());
+                    break;
+                    
+                case "Quản lý tài khoản":
+                    showContent(new QlyTaiKhoan());
+                    break;
+                    
                     
                     
                 default:

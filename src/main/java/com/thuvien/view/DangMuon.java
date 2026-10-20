@@ -1,172 +1,152 @@
 
 package com.thuvien.view;
+
 import com.thuvien.controller.SachDangMuonController;
 import com.thuvien.model.SachDangMuonModel;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+public class DangMuon extends JPanel {
 
-public class DangMuon extends javax.swing.JFrame {
-private DefaultTableModel model;
-  private SachDangMuonController sachController = new SachDangMuonController();
+    private final SachDangMuonController sachController;
+    private DefaultTableModel tableModel;
+    private JTable tblDangMuon;
+
+    private final Color mauNen = new Color(245, 247, 250);
+    private final Color mauChu = new Color(44, 62, 80);
+    private final Color mauXanh = new Color(39, 150, 87);
+
     public DangMuon() {
-    initComponents();
-//tạo bảng jtable 
-    model = new DefaultTableModel(
-        new String[]{"Mã Mượn Trả", "SDT",
-                     "Thời Gian Mượn", "Trạng Thái"}, 0);
+        sachController = new SachDangMuonController();
 
-    tblSachDangMuon.setModel(model);
-    loadSachDangMuon();
-}
+        initComponentsCustom();
+        loadSachDangMuon();
+    }
 
+    private void initComponentsCustom() {
+        setLayout(new BorderLayout(15, 20));
+        setBackground(mauNen);
+        setBorder(new EmptyBorder(24, 24, 24, 24));
 
+        // Phần tiêu đề và nút
+        JPanel pnlTop = new JPanel(new BorderLayout(10, 10));
+        pnlTop.setOpaque(false);
 
-private void loadSachDangMuon() {
+        JLabel lblTitle = new JLabel("Sách đang được mượn");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitle.setForeground(mauChu);
 
-    DefaultTableModel model =
-            (DefaultTableModel) tblSachDangMuon.getModel();
+        JButton btnLamMoi = new JButton("Làm mới");
+        btnLamMoi.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnLamMoi.setBackground(mauXanh);
+        btnLamMoi.setForeground(Color.WHITE);
+        btnLamMoi.setFocusPainted(false);
+        btnLamMoi.setOpaque(true);
+        btnLamMoi.setBorderPainted(false);
+        btnLamMoi.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLamMoi.setPreferredSize(new Dimension(120, 38));
+        btnLamMoi.addActionListener(e -> loadSachDangMuon());
 
-    model.setRowCount(0);
+        pnlTop.add(lblTitle, BorderLayout.CENTER);
+        pnlTop.add(btnLamMoi, BorderLayout.EAST);
 
-    try {
-        List<SachDangMuonModel> danhSach =
+        add(pnlTop, BorderLayout.NORTH);
+
+        // Bảng dữ liệu
+        String[] headers = {
+            "Mã Mượn Trả",
+            "Số điện thoại",
+            "Thời gian mượn",
+            "Trạng thái"
+        };
+
+        tableModel = new DefaultTableModel(headers, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tblDangMuon = new JTable(tableModel);
+        tblDangMuon.setRowHeight(34);
+        tblDangMuon.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tblDangMuon.setForeground(mauChu);
+        tblDangMuon.setSelectionBackground(new Color(220, 237, 227));
+        tblDangMuon.setSelectionForeground(mauChu);
+        tblDangMuon.setShowGrid(true);
+        tblDangMuon.setGridColor(new Color(225, 229, 235));
+        tblDangMuon.setFillsViewportHeight(true);
+
+        tblDangMuon.getTableHeader().setFont(
+            new Font("Segoe UI", Font.BOLD, 14)
+        );
+        tblDangMuon.getTableHeader().setBackground(mauChu);
+        tblDangMuon.getTableHeader().setForeground(Color.WHITE);
+        tblDangMuon.getTableHeader().setOpaque(true);
+        tblDangMuon.getTableHeader().setPreferredSize(
+            new Dimension(0, 40)
+        );
+
+        DefaultTableCellRenderer centerRenderer =
+            new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        for (int i = 0; i < tblDangMuon.getColumnCount(); i++) {
+            tblDangMuon.getColumnModel()
+                .getColumn(i)
+                .setCellRenderer(centerRenderer);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(tblDangMuon);
+        scrollPane.setBorder(
+            BorderFactory.createLineBorder(new Color(220, 224, 230))
+        );
+
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void loadSachDangMuon() {
+        tableModel.setRowCount(0);
+
+        try {
+            List<SachDangMuonModel> danhSach =
                 sachController.laySachDangMuon();
 
-        for (SachDangMuonModel sach : danhSach) {
-            model.addRow(new Object[]{
-                sach.getIdSach(),
-                sach.getSoDienThoai(),
-                sach.getHanTra(),
-                sach.getTrangThai()
-            });
-        }
+            for (SachDangMuonModel sach : danhSach) {
+                tableModel.addRow(new Object[]{
+                    sach.getIdSach(),
+                    sach.getSoDienThoai(),
+                    sach.getHanTra(),
+                    sach.getTrangThai()
+                });
+            }
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
                 this,
-                "Lỗi tải danh sách sách đang mượn: "
-                        + e.getMessage()
-        );
-    }
-}
+                "Lỗi tải danh sách sách đang mượn:\n" + e.getMessage(),
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE
+            );
 
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblSachDangMuon = new javax.swing.JTable();
-        btnXuatDangMuon = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Danh sách đang được mượn ");
-
-        tblSachDangMuon.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Mã Mượn Trả", "SĐT", "Thời Gian Mượn", "Trạng Thái"
-            }
-        ));
-        jScrollPane1.setViewportView(tblSachDangMuon);
-
-        btnXuatDangMuon.setBackground(new java.awt.Color(49, 54, 215));
-        btnXuatDangMuon.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnXuatDangMuon.setForeground(new java.awt.Color(255, 255, 255));
-        btnXuatDangMuon.setText("Xuất Báo Cáo");
-        btnXuatDangMuon.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnXuatDangMuonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnXuatDangMuon, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnXuatDangMuon, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void btnXuatDangMuonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatDangMuonActionPerformed
-        javax.swing.JOptionPane.showMessageDialog(this, "Xuất file thành công!");
-    }//GEN-LAST:event_btnXuatDangMuonActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DangMuon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DangMuon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DangMuon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DangMuon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            e.printStackTrace();
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new DangMuon().setVisible(true);
-            }
-        });
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnXuatDangMuon;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblSachDangMuon;
-    // End of variables declaration//GEN-END:variables
 }
