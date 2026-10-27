@@ -56,7 +56,7 @@ public class MainAdminFrame2 extends JFrame {
     private JPanel menuContainer;
     private JPanel contentPanel;
 
-    private JTextField txtSearch;
+    //private JTextField txtSearch;
 
     private JLabel lblUsername;
 
@@ -80,7 +80,7 @@ public class MainAdminFrame2 extends JFrame {
 
     private void initFrame() {
 
-        setTitle("Hệ Thống Quản Lý Thư Viện");
+        setTitle("Library Manager");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -173,11 +173,11 @@ public class MainAdminFrame2 extends JFrame {
         );
 
         JLabel lblSystem = new JLabel(
-                "▣  Hệ Thống Quản Lý Thư Viện"
+                "Library Manager"
         );
 
         lblSystem.setFont(
-                new Font("Segoe UI", Font.BOLD, 15)
+                new Font("Segoe UI", Font.BOLD, 24)
         );
 
         lblSystem.setForeground(TEXT);
@@ -202,34 +202,7 @@ public class MainAdminFrame2 extends JFrame {
                 new EmptyBorder(15, 0, 0, 0)
         );
 
-        txtSearch = new JTextField();
 
-        txtSearch.setPreferredSize(
-                new Dimension(400, 40)
-        );
-
-        txtSearch.setFont(
-                new Font("Segoe UI", Font.PLAIN, 14)
-        );
-
-        txtSearch.setText("Tìm kiếm chức năng...");
-
-        txtSearch.setForeground(TEXT_LIGHT);
-
-        txtSearch.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(
-                                BORDER,
-                                1,
-                                true
-                        ),
-                        new EmptyBorder(5, 15, 5, 15)
-                )
-        );
-
-        centerPanel.add(txtSearch);
-
-        header.add(centerPanel, BorderLayout.CENTER);
 
         // ----- BÊN PHẢI HEADER -----
 

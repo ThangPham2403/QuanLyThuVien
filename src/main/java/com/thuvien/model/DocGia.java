@@ -5,7 +5,7 @@ import java.util.Date;
 public class DocGia {
     private String docGiaId;
     private String docGiaName;
-    private Date ngaySinh;
+    private String ngaySinh;
     private String diaChi;
     private String sdt;
     private String email;
@@ -13,7 +13,7 @@ public class DocGia {
 
     public DocGia() {}
 
-    public DocGia(String docGiaId, String docGiaName, Date ngaySinh, String diaChi, String sdt, String email, String taiKhoanId) {
+    public DocGia(String docGiaId, String docGiaName, String ngaySinh, String diaChi, String sdt, String email, String taiKhoanId) {
         this.docGiaId = docGiaId;
         this.docGiaName = docGiaName;
         this.ngaySinh = ngaySinh;
@@ -29,8 +29,8 @@ public class DocGia {
     public String getDocGiaName() { return docGiaName; }
     public void setDocGiaName(String docGiaName) { this.docGiaName = docGiaName; }
 
-    public Date getNgaySinh() { return ngaySinh; }
-    public void setNgaySinh(Date ngaySinh) { this.ngaySinh = ngaySinh; }
+    public String getNgaySinh() { return ngaySinh; }
+    public void setNgaySinh(String ngaySinh) { this.ngaySinh = ngaySinh; }
 
     public String getDiaChi() { return diaChi; }
     public void setDiaChi(String diaChi) { this.diaChi = diaChi; }
@@ -43,4 +43,22 @@ public class DocGia {
 
     public String getTaiKhoanId() { return taiKhoanId; }
     public void setTaiKhoanId(String taiKhoanId) { this.taiKhoanId = taiKhoanId; }
+
+    public Object getSoSachDangMuon() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public Object getLuotMuon() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
+
+
+
+//
+
+
+
+
+
+

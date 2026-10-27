@@ -291,10 +291,10 @@ public class LoginForm extends javax.swing.JFrame {
         // Vào thẳng giao diện, không popup
         if (PhienDangNhap.isAdmin()) {
             new MainAdminFrame2().setVisible(true);
-        } /*else {
-            new GiaoDienDocGia().setVisible(true);   // bỏ comment khi có form độc giả
+        } else {
+            new DocGia().setVisible(true);   // bỏ comment khi có form độc giả
             System.out.println("Đăng nhập độc giả: " + PhienDangNhap.tenDocGia);   // chỉ để thử
-        }*/
+        }
         this.dispose();
     }//GEN-LAST:event_SignInActionPerformed
 

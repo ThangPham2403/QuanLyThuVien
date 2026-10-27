@@ -241,6 +241,29 @@ public class TaiKhoanDAO {
     }
 
     
+    /** Mật khẩu hiện tại có đúng với tài khoản không. */
+    public boolean kiemTraMatKhau(String taiKhoanId, String matKhau) throws SQLException {	
+        String sql = "SELECT COUNT(*) FROM TAIKHOAN WHERE taikhoan_id = ? AND password = ?";
+        try (Connection ket_noi = DBConnection.getConnection();
+             PreparedStatement cau_lenh = ket_noi.prepareStatement(sql)) {
+            cau_lenh.setString(1, taiKhoanId);
+            cau_lenh.setString(2, matKhau);
+            try (ResultSet ket_qua = cau_lenh.executeQuery()) {
+                return ket_qua.next() && ket_qua.getInt(1) > 0;
+            }
+        }
+    }
+
+    public void doiMatKhau(String taiKhoanId, String matKhauMoi) throws SQLException {
+        String sql = "UPDATE TAIKHOAN SET password = ? WHERE taikhoan_id = ?";
+        try (Connection ket_noi = DBConnection.getConnection();
+             PreparedStatement cau_lenh = ket_noi.prepareStatement(sql)) {
+            cau_lenh.setString(1, matKhauMoi);
+            cau_lenh.setString(2, taiKhoanId);
+            cau_lenh.executeUpdate();
+        }
+    }
+
     
     
 }

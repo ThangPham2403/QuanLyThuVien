@@ -22,7 +22,8 @@ public class QlyTaiKhoan extends javax.swing.JPanel {
      */
     public QlyTaiKhoan() {        
         initComponents();
-        vaiTro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Độc giả", " " }));
+        //vaiTro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Độc giả", " " }));
+        vaiTro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Độc giả" }));
         tblTaiKhoan.setDefaultEditor(Object.class, null);   // bảng không cho gõ trực tiếp
         tblTaiKhoan.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         vaiTro.addActionListener(e -> capNhatOHoTen());
@@ -53,13 +54,28 @@ public class QlyTaiKhoan extends javax.swing.JPanel {
         dong = tblTaiKhoan.convertRowIndexToModel(dong);
         return String.valueOf(tblTaiKhoan.getModel().getValueAt(dong, 1));   // cột Mã TK
     }
-
-    // Họ tên chỉ nhập được khi vai trò là DOCGIA
-    private void capNhatOHoTen() {
-        boolean laDocGia = "DOCGIA".equalsIgnoreCase(String.valueOf(vaiTro.getSelectedItem()));
-        name.setEnabled(laDocGia);          // khóa ô Họ tên khi là Admin
-        if (!laDocGia) name.setText("");
+    
+    
+    //phan vua sua them
+    private String layMaVaiTro() {
+    return vaiTro.getSelectedIndex() == 1 ? "DOCGIA" : "ADMIN";
     }
+
+
+    
+    // Họ tên chỉ nhập được khi vai trò là DOCGIA
+//    private void capNhatOHoTen() {
+//        boolean laDocGia = "DOCGIA".equalsIgnoreCase(String.valueOf(vaiTro.getSelectedItem()));
+//        name.setEnabled(laDocGia);          // khóa ô Họ tên khi là Admin
+//        if (!laDocGia) name.setText("");
+//    }
+    
+    private void capNhatOHoTen() {
+    boolean laDocGia = vaiTro.getSelectedIndex() == 1;
+    name.setEnabled(laDocGia);          // chỉ mở ô Họ tên khi chọn Độc giả
+    if (!laDocGia) name.setText("");
+    }
+
 
     private void lamMoi() {
         user.setText("");
@@ -231,13 +247,23 @@ public class QlyTaiKhoan extends javax.swing.JPanel {
         String id = layMaDangChon();
         String ten = user.getText().trim();
 
+//        String loi = controller.capNhat(
+//                id,
+//                ten,
+//                email.getText().trim(),
+//                new String(pass.getPassword()),     // để trống = giữ mật khẩu cũ
+//                String.valueOf(vaiTro.getSelectedItem()),
+//                name.getText().trim());
+
         String loi = controller.capNhat(
-                id,
-                ten,
-                email.getText().trim(),
-                new String(pass.getPassword()),     // để trống = giữ mật khẩu cũ
-                String.valueOf(vaiTro.getSelectedItem()),
-                name.getText().trim());
+            id,
+            ten,
+            email.getText().trim(),
+            new String(pass.getPassword()),
+            layMaVaiTro(),                   // đổi dòng này
+            name.getText().trim());
+
+
         if (loi != null) {
             JOptionPane.showMessageDialog(this, loi);
             return;
@@ -256,12 +282,19 @@ public class QlyTaiKhoan extends javax.swing.JPanel {
     private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
         // TODO add your handling code here:
         
+//        String loi = controller.them(
+//            user.getText().trim(),
+//            new String(pass.getPassword()),
+//            email.getText().trim(),
+//            String.valueOf(vaiTro.getSelectedItem()),
+//            name.getText().trim());
         String loi = controller.them(
             user.getText().trim(),
             new String(pass.getPassword()),
             email.getText().trim(),
-            String.valueOf(vaiTro.getSelectedItem()),
+            layMaVaiTro(),                       // đổi dòng này
             name.getText().trim());
+
         if (loi != null) {
             JOptionPane.showMessageDialog(this, loi);
             return;
@@ -309,7 +342,8 @@ public class QlyTaiKhoan extends javax.swing.JPanel {
 
         user.setText(String.valueOf(m.getValueAt(dong, 2)));
         email.setText(String.valueOf(m.getValueAt(dong, 3)));
-        vaiTro.setSelectedItem(String.valueOf(m.getValueAt(dong, 4)));
+//        vaiTro.setSelectedItem(String.valueOf(m.getValueAt(dong, 4)));
+        vaiTro.setSelectedIndex("DOCGIA".equalsIgnoreCase(String.valueOf(m.getValueAt(dong, 4))) ? 1 : 0);
         pass.setText("");
         vaiTro.setEnabled(false);
         capNhatOHoTen();                    // bật hoặc tắt ô họ tên theo vai trò

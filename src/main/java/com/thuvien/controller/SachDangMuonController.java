@@ -1,4 +1,4 @@
-package com.thuvien.controller;
+ package com.thuvien.controller;
 
 import com.thuvien.config.DBConnection;
 import com.thuvien.model.SachDangMuonModel;
@@ -14,7 +14,9 @@ public class SachDangMuonController {
 
     public List<SachDangMuonModel> laySachDangMuon()
             throws Exception {
-
+        
+        new com.thuvien.dao.TrangThaiMuonTraDAO().capNhatTrangThaiQuaHan();
+        
         List<SachDangMuonModel> danhSach = new ArrayList<>();
 
   String sql =

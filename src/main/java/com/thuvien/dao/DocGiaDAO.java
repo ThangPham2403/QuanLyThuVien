@@ -16,27 +16,10 @@ import java.sql.SQLException;       // Xử lý lỗi liên quan đến SQL.
 
 public class DocGiaDAO {
 
-    /**
-     * Tìm thông tin độc giả dựa trên mã tài khoản đã liên kết.
-     *
-     * @param taiKhoanId Mã tài khoản cần tìm độc giả tương ứng.
-     *
-     * @return Đối tượng DocGia nếu tìm thấy độc giả có mã tài khoản
-     *         tương ứng; trả về null nếu không tìm thấy hoặc chưa liên kết.
-     *
-     * @throws SQLException Nếu xảy ra lỗi khi truy cập cơ sở dữ liệu.
-     */
+    // Doc gia dao cua chien
     public DocGia timTheoTaiKhoan(String taiKhoanId) throws SQLException {
-
-        // Câu lệnh SQL lấy mã độc giả, tên độc giả và số điện thoại
-        // từ bảng DOCGIA dựa trên mã tài khoản.
-        // Dấu ? là vị trí sẽ nhận giá trị taiKhoanId.
         String sql = "SELECT docgia_id, docgia_name, sdt "
                    + "FROM DOCGIA WHERE taikhoan_id = ?";
-
-        // Mở kết nối đến CSDL và chuẩn bị câu lệnh SQL.
-        // try-with-resources tự động đóng Connection và PreparedStatement
-        // sau khi hoàn thành, kể cả khi xảy ra lỗi.
         try (Connection ket_noi = DBConnection.getConnection();
              PreparedStatement cau_lenh = ket_noi.prepareStatement(sql)) {
 
@@ -45,36 +28,42 @@ public class DocGiaDAO {
 
             // Thực thi câu lệnh SELECT và nhận kết quả truy vấn.
             try (ResultSet ket_qua = cau_lenh.executeQuery()) {
-
-                // Kiểm tra xem kết quả có bản ghi nào hay không.
-                // ket_qua.next() di chuyển đến bản ghi đầu tiên nếu có.
                 if (ket_qua.next()) {
-
-                    // Tạo một đối tượng DocGia để lưu thông tin
-                    // lấy được từ cơ sở dữ liệu.
                     DocGia dg = new DocGia();
-
-                    // Lấy mã độc giả từ cột docgia_id
-                    // và gán vào đối tượng DocGia.
                     dg.setDocGiaId(ket_qua.getString("docgia_id"));
-
-                    // Lấy tên độc giả từ cột docgia_name
-                    // và gán vào đối tượng DocGia.
                     dg.setDocGiaName(ket_qua.getString("docgia_name"));
-
-                    // Lấy số điện thoại từ cột sdt
-                    // và gán vào đối tượng DocGia.
                     dg.setSdt(ket_qua.getString("sdt"));
-
-                    // Trả về đối tượng DocGia chứa thông tin đã tìm được.
                     return dg;
                 }
             }
         }
-
-        // Nếu không tìm thấy độc giả có mã tài khoản tương ứng,
-        // trả về null để tầng gọi biết rằng không có kết quả.
         return null;
+    }
+
+
+    // Doc Gia dao cua hien
+    //  Cập nhật thông tin độc giả khi bấm nút "Lưu thay đổi"
+    public boolean updateDocGia(DocGia dg) {
+
+        String sql = "UPDATE DOCGIA SET diachi = ?, sdt = ?, email = ? WHERE docgia_id = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, dg.getDiaChi());
+            ps.setString(2, dg.getSdt());
+            ps.setString(3, dg.getEmail());
+            ps.setString(4, dg.getDocGiaId()); // Giá trị là DG001
+            ps.setString(5, dg.getDocGiaName());
+            ps.setString(6, dg.getNgaySinh());
+
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
 

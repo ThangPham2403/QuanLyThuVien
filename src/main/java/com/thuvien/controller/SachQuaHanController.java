@@ -16,6 +16,8 @@ public class SachQuaHanController {
     public List<SachQuaHanModel> layDanhSachSachQuaHan()
             throws Exception {
 
+        new com.thuvien.dao.TrangThaiMuonTraDAO().capNhatTrangThaiQuaHan();
+        
         List<SachQuaHanModel> danhSach = new ArrayList<>();
 
         String sql =

@@ -85,4 +85,28 @@ public class TaiKhoanController {
             return "Lỗi cơ sở dữ liệu: " + ex.getMessage();
         }
     }
+    
+    public String doiMatKhau(String matKhauCu, String matKhauMoi, String xacNhan) {
+        String id = PhienDangNhap.taiKhoanId;
+        if (id == null)
+            return "Bạn chưa đăng nhập!";
+        if (matKhauCu.isEmpty() || matKhauMoi.isEmpty() || xacNhan.isEmpty())
+            return "Vui lòng nhập đủ ba ô mật khẩu!";
+        if (matKhauMoi.length() < 6)
+            return "Mật khẩu mới phải có ít nhất 6 ký tự!";
+        if (matKhauMoi.equals(matKhauCu))
+            return "Mật khẩu mới phải khác mật khẩu hiện tại!";
+        if (!matKhauMoi.equals(xacNhan))
+            return "Mật khẩu xác nhận không khớp!";
+
+        try {
+            if (!taiKhoanDAO.kiemTraMatKhau(id, matKhauCu))
+                return "Mật khẩu hiện tại không đúng!";
+            taiKhoanDAO.doiMatKhau(id, matKhauMoi);
+            return null;
+        } catch (SQLException ex) {
+            return "Lỗi cơ sở dữ liệu: " + ex.getMessage();
+        }
+    }
+
 }

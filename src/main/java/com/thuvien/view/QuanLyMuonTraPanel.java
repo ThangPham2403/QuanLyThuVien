@@ -1,81 +1,93 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
+
 package com.thuvien.view;
+
 import com.thuvien.dao.PhieuMuonDAO;
 import com.thuvien.model.PhieuMuon;
-import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
 import com.thuvien.model.CTMuonTra;
-import com.thuvien.dao.CTMuonTraDAO;
-import com.thuvien.model.MuonTra;
+
 public class QuanLyMuonTraPanel extends javax.swing.JPanel {
-    /**
-     * Creates new form QuanLyMuonTraPanel
-     */
-private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> rowSorter;
- public QuanLyMuonTraPanel() {
-    initComponents();
-    loadDataToTable();
-    javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblMuonTra.getModel();
+
+    private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> rowSorter;
+
+    public QuanLyMuonTraPanel() {
+        initComponents();
+
+        loadDataToTable();
+
+        javax.swing.table.DefaultTableModel model =
+                (javax.swing.table.DefaultTableModel) tblMuonTra.getModel();
+
         rowSorter = new javax.swing.table.TableRowSorter<>(model);
         tblMuonTra.setRowSorter(rowSorter);
+
         jTextField12.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent e) {
-                String text = jTextField12.getText();
-                if (text.equals("Tìm theo Tên, Tác giả, Mã sách.....")) {
-                    text = "";
-                }
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + text));
+                locDanhSachSach();
+            }
+        });
+
+        // Tự động dàn đều các cột, tránh khoảng trống xanh bên phải bảng.
+        tblMuonTra.setRowHeight(35);
+        tblMuonTra.setAutoResizeMode(
+                javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        tblMuonTra.setFillsViewportHeight(true);
+        tblMuonTra.setBackground(java.awt.Color.WHITE);
+        jScrollPane2.getViewport().setBackground(java.awt.Color.WHITE);
+        tblMuonTra.getTableHeader().setPreferredSize(
+                new java.awt.Dimension(0, 35));
+        tblMuonTra.getTableHeader().setOpaque(true);
+        tblMuonTra.getTableHeader().setBackground(
+                new java.awt.Color(30, 90, 200));
+        tblMuonTra.getTableHeader().setForeground(java.awt.Color.WHITE);
+        tblMuonTra.getTableHeader().setFont(
+                new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        tblMuonTra.setFont(
+                new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+
+        // Tên sách tự động hiển thị theo dòng đang chọn.
+        jTextField6.setEditable(false);
+
+        tblMuonTra.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = tblMuonTra.getSelectedRow();
+
+                if (selectedRow >= 0) {
+                    int modelRow =
+                            tblMuonTra.convertRowIndexToModel(selectedRow);
+
+                    jTextField6.setText(
+                            String.valueOf(model.getValueAt(modelRow, 1)));
                 }
             }
         });
-        // 1. Tăng chiều cao mỗi dòng lên cho thoáng (ví dụ từ 20 lên 35 hoặc 40 pixel)
-        tblMuonTra.setRowHeight(35);
 
-        // 2. Cho phép các cột tự động dàn đều lấp đầy chiều rộng bảng
-        tblMuonTra.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        // Mặc định ngày mượn là hôm nay, hạn trả sau 14 ngày.
+        java.time.LocalDate homNay = java.time.LocalDate.now();
 
-        // 3. Tăng cỡ chữ bảng và tiêu đề cho cân đối với khung to
-        tblMuonTra.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
-        tblMuonTra.getTableHeader().setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
-        tblMuonTra.getTableHeader().setPreferredSize(new java.awt.Dimension(0, 35));
-        // Giúp bảng tự động mở rộng chiều cao để lấp đầy toàn bộ khung JScrollPane nếu dữ liệu ít
-        tblMuonTra.setFillsViewportHeight(true);
-        tblMuonTra.getTableHeader().setOpaque(true);
-        tblMuonTra.getTableHeader().setBackground(new java.awt.Color(30, 90, 200));
-        tblMuonTra.getTableHeader().setForeground(java.awt.Color.WHITE);
-        tblMuonTra.getTableHeader().setFont(
-        new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13)
-    );
+        jTextField11.setText(homNay.toString());
+        jTextField1.setText(homNay.plusDays(14).toString());
+    }
 
-    // Tạo đường kẻ dọc
-    javax.swing.JSeparator duongKe =
-        new javax.swing.JSeparator(javax.swing.SwingConstants.VERTICAL);
-    duongKe.setForeground(new java.awt.Color(180, 220, 245));
-    duongKe.setPreferredSize(new java.awt.Dimension(2, 300));
-    javax.swing.SwingUtilities.invokeLater(() -> {
-        tblMuonTra.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        tblMuonTra.getColumnModel().getColumn(0).setPreferredWidth(65);  // Mã Sách (nhỏ)
-        tblMuonTra.getColumnModel().getColumn(1).setPreferredWidth(200); // Tên Sách
-        tblMuonTra.getColumnModel().getColumn(2).setPreferredWidth(170); // Tác Giả
-        tblMuonTra.getColumnModel().getColumn(3).setPreferredWidth(140); // Số lượng trong kho (to)
-    });
-}
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+    private void locDanhSachSach() {
+        if (rowSorter == null) {
+            return;
+        }
+
+        String text = jTextField12.getText().trim();
+
+        if (text.isEmpty()
+                || text.equals("Tìm theo Tên, Tác giả, Mã sách.....")) {
+            rowSorter.setRowFilter(null);
+        } else {
+            rowSorter.setRowFilter(
+                    javax.swing.RowFilter.regexFilter(
+                            "(?i)" + java.util.regex.Pattern.quote(text)));
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -98,258 +110,320 @@ private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> ro
         jTextField1 = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(240, 242, 245));
-        setBorder(new javax.swing.border.LineBorder(new java.awt.Color(153, 204, 255), 5, true));
+        setBorder(new javax.swing.border.LineBorder(
+                new java.awt.Color(153, 204, 255), 5, true));
 
         jLabel1.setBackground(new java.awt.Color(51, 153, 0));
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("      QUẢN LÝ MƯỢN TRẢ SÁCH - HỆ THỐNG THƯ VIỆN");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        jLabel1.setForeground(java.awt.Color.WHITE);
+        jLabel1.setHorizontalAlignment(
+                javax.swing.SwingConstants.CENTER);
+        jLabel1.setText(
+                "QUẢN LÝ MƯỢN TRẢ SÁCH - HỆ THỐNG THƯ VIỆN");
         jLabel1.setOpaque(true);
 
         jLabel2.setText("TÊN SÁCH");
-
         jLabel3.setText("HỌ TÊN ĐỘC GIẢ");
-
         jLabel4.setText("SỐ ĐIỆN THOẠI");
-
         jLabel5.setText("ĐỊA CHỈ");
-
         jLabel6.setText("NGÀY MƯỢN");
+        jLabel7.setText("HẠN TRẢ");
 
         jButton1.setBackground(new java.awt.Color(0, 51, 204));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 13));
+        jButton1.setForeground(java.awt.Color.WHITE);
         jButton1.setText("Xác nhận mượn");
         jButton1.setFocusPainted(false);
         jButton1.setOpaque(true);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        jButton1.addActionListener(evt -> jButton1ActionPerformed(evt));
 
         tblMuonTra.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Mã Sách", "Tên Sách", "Tác Giả", "Số lượng trong kho"
-            }
+                new Object[][]{
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null}
+                },
+                new String[]{
+                    "Mã Sách", "Tên Sách",
+                    "Tác Giả", "Số lượng trong kho"
+                }
         ));
         jScrollPane2.setViewportView(tblMuonTra);
 
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
-            }
-        });
-
-        jTextField8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField8ActionPerformed(evt);
-            }
-        });
-
-        jTextField9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField9ActionPerformed(evt);
-            }
-        });
-
-        jTextField10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField10ActionPerformed(evt);
-            }
-        });
-
-        jTextField11.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField11ActionPerformed(evt);
-            }
-        });
-
         jTextField12.setText("Tìm theo Tên, Tác giả, Mã sách.....");
-        jTextField12.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField12ActionPerformed(evt);
-            }
-        });
 
         button1.setBackground(new java.awt.Color(51, 153, 0));
-        button1.setForeground(new java.awt.Color(255, 255, 255));
+        button1.setForeground(java.awt.Color.WHITE);
         button1.setLabel("Tìm Kiếm");
-        button1.setName("Tìm Kiếm"); // NOI18N
-        button1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button1ActionPerformed(evt);
-            }
-        });
-
-        jLabel7.setText("HẠN TRẢ");
-
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
+        button1.addActionListener(evt -> locDanhSachSach());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
+
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            layout.createParallelGroup(
+                    javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(
+                        javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jTextField12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField8)
-                    .addComponent(jTextField11, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField10, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(button1, 62, 62, 62))
+                    .addComponent(jScrollPane2, 0, 578, Short.MAX_VALUE))
+                .addPreferredGap(
+                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(
+                        javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2, 102, 102, 102)
                     .addComponent(jTextField6)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, 112, 112, 112)
+                    .addComponent(jTextField8)
+                    .addComponent(jLabel4, 106, 106, 106)
+                    .addComponent(jTextField9)
+                    .addComponent(jLabel5, 102, 102, 102)
+                    .addComponent(jTextField10)
+                    .addComponent(jLabel6, 100, 100, 100)
+                    .addComponent(jTextField11)
+                    .addComponent(jLabel7, 89, 89, 89)
+                    .addComponent(jTextField1)
+                    .addComponent(jButton1, 212, 212, 212))
                 .addGap(33, 33, 33))
             .addGroup(layout.createSequentialGroup()
                 .addGap(249, 249, 249)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jLabel1, 318, 318, 318)
+                .addContainerGap(
+                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(
+                    javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, 32, 32, 32)
                 .addGap(25, 25, 25)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(
+                        javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField6, 34, 34, 34))
+                    .addComponent(button1, 35, 35, 35)
+                    .addComponent(jTextField12, 35, 35, 35))
                 .addGap(3, 3, 3)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(
+                        javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel3, 26, 26, 26)
                         .addGap(2, 2, 2)
-                        .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField8, 34, 34, 34)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField9, 34, 34, 34)
                         .addGap(8, 8, 8)
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField10, 37, 37, 37)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField11, 34, 34, 34)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel7, 26, 26, 26)
+                        .addPreferredGap(
+                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1, 37, 37, 37)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 444, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jButton1, 38, 38, 38))
+                    .addComponent(jScrollPane2, 444, 444, 444))
                 .addContainerGap(94, Short.MAX_VALUE))
         );
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            
-        try {
-           // 1. Lấy dữ liệu từ các ô nhập liệu bên phải tương ứng
-        String maMuonTra = jTextField6.getText().trim();  // Mã mượn trả
-        String maDocGia = jTextField8.getText().trim();   // Mã độc giả
-        String ngayMuonStr = jTextField11.getText().trim(); // Ngày mượn (định dạng yyyy-MM-dd hoặc dd/MM/yyyy)
-        String ngayTraStr = jTextField1.getText().trim();   // Hạn trả / Ngày trả
-        String trangThai = "Đang mượn";                     // Trạng thái mặc định
-        // 2. Kiểm tra các trường bắt buộc không được để trống
-        if (maMuonTra.isEmpty() || maDocGia.isEmpty() || ngayMuonStr.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ Mã mượn trả, Mã độc giả và Ngày mượn!");
-            return;
-        }
-        // 3. Khởi tạo đối tượng MuonTra và chuyển đổi ngày tháng
-        MuonTra mt = new MuonTra();
-        mt.setMuonTraId(maMuonTra);
-        mt.setDocGiaId(maDocGia);
-        mt.setTrangThai(trangThai);
-        // Chuyển đổi chuỗi ngày sang java.util.Date (giả sử định dạng chuẩn yyyy-MM-dd hoặc dùng SimpleDateFormat)
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        try {
-            mt.setThoiGianMuon(sdf.parse(ngayMuonStr));
-            if (!ngayTraStr.isEmpty()) {
-                mt.setThoiGianTra(sdf.parse(ngayTraStr));
-            }
-        } catch (java.text.ParseException parseEx) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ! Vui lòng nhập theo định dạng: yyyy-MM-dd");
-            return;
-        }
-        // 4. Gọi DAO để thực hiện insert vào CSDL
-        PhieuMuonDAO dao = new PhieuMuonDAO();
-        boolean success = dao.insert(mt);
-        if (success) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Thêm phiếu mượn thành công!");
-            loadDataToTable(); // Tải lại bảng để hiển thị dữ liệu mới cập nhật
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Thêm phiếu mượn thất bại! Vui lòng kiểm tra lại mã (có thể bị trùng).");
-        }
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
-        e.printStackTrace();
     }
-    }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
 
-    private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField8ActionPerformed
+        int selectedRow = tblMuonTra.getSelectedRow();
 
-    private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField9ActionPerformed
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Vui lòng chọn một cuốn sách trong bảng trước khi xác nhận mượn.");
+            return;
+        }
 
-    private void jTextField10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField10ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField10ActionPerformed
+        int modelRow = tblMuonTra.convertRowIndexToModel(selectedRow);
 
-    private void jTextField12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField12ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField12ActionPerformed
+        javax.swing.table.DefaultTableModel model =
+                (javax.swing.table.DefaultTableModel) tblMuonTra.getModel();
 
-    private void jTextField11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField11ActionPerformed
+        String maSach = String.valueOf(model.getValueAt(modelRow, 0));
+        String tenSach = String.valueOf(model.getValueAt(modelRow, 1));
 
-    private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_button1ActionPerformed
+        int soLuongKho;
+        try {
+            soLuongKho = Integer.parseInt(
+                    String.valueOf(model.getValueAt(modelRow, 3)));
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Không đọc được số lượng tồn kho của sách đã chọn.");
+            return;
+        }
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+        if (soLuongKho <= 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Sách này hiện không còn trong kho.");
+            return;
+        }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+        String hoTen = jTextField8.getText().trim();
+        String sdt = jTextField9.getText().trim();
+        String diaChi = jTextField10.getText().trim();
+        String ngayMuonStr = jTextField11.getText().trim();
+        String hanTraStr = jTextField1.getText().trim();
+
+        if (hoTen.isEmpty() || sdt.isEmpty() || diaChi.isEmpty()
+                || ngayMuonStr.isEmpty() || hanTraStr.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Vui lòng nhập đầy đủ họ tên, số điện thoại, địa chỉ, ngày mượn và hạn trả.");
+            return;
+        }
+
+        java.util.Date ngayMuon;
+        java.util.Date hanTra;
+
+        java.text.SimpleDateFormat sdf =
+                new java.text.SimpleDateFormat("yyyy-MM-dd");
+        sdf.setLenient(false);
+
+        try {
+            ngayMuon = sdf.parse(ngayMuonStr);
+            hanTra = sdf.parse(hanTraStr);
+        } catch (java.text.ParseException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Ngày không hợp lệ. Vui lòng nhập theo định dạng yyyy-MM-dd.");
+            return;
+        }
+
+        if (hanTra.before(ngayMuon)) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Hạn trả không được trước ngày mượn.");
+            return;
+        }
+
+        try {
+            PhieuMuonDAO dao = new PhieuMuonDAO();
+
+            String maDocGia = dao.timDocGiaId(hoTen, sdt, diaChi);
+
+            if (maDocGia == null) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Không tìm thấy độc giả khớp cả họ tên, số điện thoại và địa chỉ trong bảng DOCGIA. "
+                        + "Hãy kiểm tra thông tin hoặc tạo hồ sơ độc giả trước.");
+                return;
+            }
+
+            PhieuMuon phieu = new PhieuMuon();
+            phieu.setMuontraId(
+                    dao.taoMaMoi("MUONTRA", "muontra_id", "MT"));
+            phieu.setDocgiaId(maDocGia);
+            phieu.setThoiGianMuon(ngayMuon);
+
+            // Theo thống nhất của nhóm: thoi_gian_tra lưu hạn trả khi lập phiếu.
+            phieu.setThoiGianTra(hanTra);
+            phieu.setTrangThai("Đang mượn");
+
+            CTMuonTra chiTiet = new CTMuonTra();
+            chiTiet.setCtmtId(
+                    dao.taoMaMoi("CT_MUONTRA", "ctmt_id", "CTMT"));
+            chiTiet.setMuonTraId(phieu.getMuontraId());
+            chiTiet.setSachId(maSach);
+            chiTiet.setSoLuong(1);
+
+            dao.muonSach(phieu, chiTiet);
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Lập phiếu mượn thành công!"
+                    + "\nMã phiếu: " + phieu.getMuontraId()
+                    + "\nTên sách: " + tenSach
+                    + "\nMã sách: " + maSach
+                    + "\nHạn trả: " + hanTraStr
+                    + "\nSố lượng mượn: 1");
+
+            loadDataToTable();
+            jTextField6.setText("");
+
+        } catch (java.sql.SQLException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Không thể lập phiếu mượn: " + ex.getMessage(),
+                    "Lỗi mượn sách",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+    
+    
+    
+    
+
+    private void loadDataToTable() {
+
+        String sql = "SELECT s.sach_id, s.sach_name, "
+                + "ISNULL(tg.tacgia_name, N'Chưa có') AS tacgia, s.so_luong "
+                + "FROM SACH s "
+                + "LEFT JOIN TACGIA tg ON s.tacgia_id = tg.tacgia_id "
+                + "ORDER BY s.sach_id";
+
+        javax.swing.table.DefaultTableModel model =
+                (javax.swing.table.DefaultTableModel) tblMuonTra.getModel();
+
+        model.setRowCount(0);
+        model.setColumnIdentifiers(new Object[]{
+            "Mã Sách", "Tên Sách", "Tác Giả", "Số lượng trong kho"
+        });
+
+        try (java.sql.Connection conn =
+                     com.thuvien.config.DBConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("sach_id"),
+                    rs.getString("sach_name"),
+                    rs.getString("tacgia"),
+                    rs.getInt("so_luong")
+                });
+            }
+
+            tblMuonTra.setAutoResizeMode(
+                    javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            tblMuonTra.setFillsViewportHeight(true);
+
+            if (rowSorter != null) {
+                locDanhSachSach();
+            }
+
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Không thể tải danh sách sách từ database: " + e.getMessage(),
+                    "Lỗi kết nối database",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    // Variables của giao diện
     private java.awt.Button button1;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
@@ -368,64 +442,14 @@ private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> ro
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
     private javax.swing.JTable tblMuonTra;
-    // End of variables declaration//GEN-END:variables
-// Hàm tải dữ liệu lên bảng tblMuonTra
-    // Hàm tải dữ liệu lên bảng tblMuonTra (Cấu hình chuẩn 6 cột)
-private void loadDataToTable() {
-    String url = "jdbc:sqlserver://localhost:1433;"
-            + "databaseName=QuanLyThuVien;"
-            + "encrypt=true;"
-            + "trustServerCertificate=true;";
 
-    // Câu lệnh SQL truy vấn danh sách sách kết hợp với bảng tác giả
-    String sql = "SELECT s.sach_id, s.sach_name, "
-               + "ISNULL(tg.tacgia_name, N'Chưa có') AS tacgia, s.so_luong "
-               + "FROM SACH s "
-               + "LEFT JOIN TACGIA tg ON s.tacgia_id = tg.tacgia_id";
-    javax.swing.table.DefaultTableModel model = 
-        (javax.swing.table.DefaultTableModel) tblMuonTra.getModel();
-    model.setRowCount(0); // Xóa dữ liệu cũ trên bảng
-    // Đặt đúng 4 cột khớp với giao diện thiết kế của bạn
-    model.setColumnIdentifiers(new Object[]{
-        "Mã Sách", "Tên Sách", "Tác Giả", "Số lượng trong kho"
-    });
-    try (java.sql.Connection conn = java.sql.DriverManager.getConnection(url, "sa", "123456");
-         java.sql.Statement st = conn.createStatement();
-         java.sql.ResultSet rs = st.executeQuery(sql)) {
-        boolean hasData = false;
-        while (rs.next()) {
-            hasData = true;
-            model.addRow(new Object[]{
-                rs.getString("sach_id"),
-                rs.getString("sach_name"),
-                rs.getString("tacgia"),
-                rs.getInt("so_luong")
-            });
-        }
-        // Nếu CSDL trống, hiển thị dữ liệu mẫu dự phòng
-        if (!hasData) {
-            throw new Exception("Trống dữ liệu trong CSDL");
-        }
-    } catch (Exception e) {
-        // Dữ liệu mẫu dự phòng khớp với 4 cột
-        model.addRow(new Object[]{"S001", "Đắc Nhân Tâm", "Dale Carnegie", 10});
-        model.addRow(new Object[]{"S002", "Clean Code", "Robert C. Martin", 5});
-        model.addRow(new Object[]{"S003", "Design Patterns", "Erich Gamma", 8});
-        model.addRow(new Object[]{"S004", "Dế Mèn Phiêu Lưu Ký", "Tô Hoài", 15});
-        // Thiết lập lại kích thước từng cột sau khi load dữ liệu xong
-    tblMuonTra.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF); 
-    tblMuonTra.getColumnModel().getColumn(0).setPreferredWidth(40);  
-    tblMuonTra.getColumnModel().getColumn(1).setPreferredWidth(180); 
-    tblMuonTra.getColumnModel().getColumn(2).setPreferredWidth(130); 
-    tblMuonTra.getColumnModel().getColumn(3).setPreferredWidth(110); 
-    }
-}
     public static void main(String[] args) {
-    javax.swing.JFrame frame = new javax.swing.JFrame("Quản Lý Mượn Trả Sách");
-    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-    frame.add(new QuanLyMuonTraPanel());
-    frame.pack(); // Tự động co giãn vừa khít các thành phần giao diện
-    frame.setLocationRelativeTo(null);
-    frame.setVisible(true);
-}
+        javax.swing.JFrame frame =
+                new javax.swing.JFrame("Quản Lý Mượn Trả Sách");
+        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+        frame.add(new QuanLyMuonTraPanel());
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
 }

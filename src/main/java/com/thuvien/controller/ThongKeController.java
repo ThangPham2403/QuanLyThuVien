@@ -27,7 +27,9 @@ public class ThongKeController {
 
     // Lấy toàn bộ dữ liệu thống kê
     public ThongKeModel layThongKe() throws SQLException {
-
+        
+        new com.thuvien.dao.TrangThaiMuonTraDAO().capNhatTrangThaiQuaHan();
+        
         // Đếm tổng số đầu sách
         String sqlSach = "SELECT COUNT(*) FROM SACH";
 
